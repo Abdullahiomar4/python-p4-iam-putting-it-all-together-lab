@@ -1,33 +1,22 @@
-#!/usr/bin/env python3
+# server/app.py
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-from flask import request, session
-from flask_restful import Resource
-from sqlalchemy.exc import IntegrityError
+db = SQLAlchemy()
 
-from config import app, db, api
-from models import User, Recipe
+def create_app(config=None):
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['TESTING'] = False
 
-class Signup(Resource):
-    pass
+    if config:
+        app.config.update(config)
 
-class CheckSession(Resource):
-    pass
+    db.init_app(app)
 
-class Login(Resource):
-    pass
+    # import and register routes
+    from routes import bp
+    app.register_blueprint(bp)
 
-class Logout(Resource):
-    pass
-
-class RecipeIndex(Resource):
-    pass
-
-api.add_resource(Signup, '/signup', endpoint='signup')
-api.add_resource(CheckSession, '/check_session', endpoint='check_session')
-api.add_resource(Login, '/login', endpoint='login')
-api.add_resource(Logout, '/logout', endpoint='logout')
-api.add_resource(RecipeIndex, '/recipes', endpoint='recipes')
-
-
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    return app

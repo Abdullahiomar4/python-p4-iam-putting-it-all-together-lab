@@ -1,15 +1,12 @@
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy_serializer import SerializerMixin
+# server/models.py
+from app import db
 
-from config import db, bcrypt
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
 
-class User(db.Model, SerializerMixin):
-    __tablename__ = 'users'
-
-    pass
-
-class Recipe(db.Model, SerializerMixin):
-    __tablename__ = 'recipes'
-    
-    pass
+class Recipe(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref='recipes')
